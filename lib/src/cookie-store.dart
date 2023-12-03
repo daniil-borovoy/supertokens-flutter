@@ -76,7 +76,7 @@ class SuperTokensCookieStore {
     _allCookies?.removeWhere((key, value) => value.isEmpty);
 
     await _updatePersistentStorage();
-    await _loadFromPersistence();
+    _loadFromPersistence();
   }
 
   /// Returns a Uri to use when saving the cookie
@@ -189,7 +189,7 @@ class SuperTokensCookieStore {
 
     _allCookies?[uri] = currentCookies;
     await _updatePersistentStorage();
-    await _loadFromPersistence();
+    _loadFromPersistence();
     return;
   }
 
