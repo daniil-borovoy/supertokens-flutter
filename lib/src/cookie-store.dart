@@ -12,18 +12,23 @@ class SuperTokensCookieStore {
   static final SuperTokensCookieStore _singleton =
       SuperTokensCookieStore._internal();
 
-  factory SuperTokensCookieStore() {
-    SharedPreferences.getInstance().then((value) {
-      _sharedPreferences = value;
-      _loadFromPersistence();
-    });
+  factory SuperTokensCookieStore({SharedPreferences? sharedPreferences}) {
+    if (sharedPreferences == null) {
+      SharedPreferences.getInstance().then((value) {
+        _sharedPreferences = value;
+        _loadFromPersistence();
+      });
+    } else {
+      _sharedPreferences = sharedPreferences;
+    }
+    _loadFromPersistence();
     return _singleton;
   }
 
   SuperTokensCookieStore._internal();
 
   /// Loads all cookies stored in shared preferences into the in memory map [_allCookies]
-  static Future<void> _loadFromPersistence() async {
+  static void _loadFromPersistence() {
     _allCookies = {};
     String cookiesStringInStorage =
         _sharedPreferences?.getString(_cookieSharedPrefsKey) ?? "{}";
