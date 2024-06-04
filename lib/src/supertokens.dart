@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:convert';
 import 'package:supertokens_flutter/src/errors.dart';
 import 'package:supertokens_flutter/src/front-token.dart';
@@ -189,14 +190,16 @@ class SuperTokens {
       throw SuperTokensException("Session does not exist");
     int accessTokenExpiry = frontToken['ate'] as int;
     Map<String, dynamic> userPayload = frontToken['up'] as Map<String, dynamic>;
-
     if (accessTokenExpiry < DateTime.now().millisecondsSinceEpoch) {
-      bool retry = await SuperTokens.attemptRefreshingSession();
-
-      if (retry)
-        return getAccessTokenPayloadSecurely();
-      else
-        throw SuperTokensException("Could not refresh session");
+      try {
+        bool retry = await SuperTokens.attemptRefreshingSession();
+        if (retry)
+          return getAccessTokenPayloadSecurely();
+        else
+          throw SuperTokensException("Could not refresh session");
+      } on SocketException {
+        return userPayload;
+      }
     }
     return userPayload;
   }

@@ -268,9 +268,13 @@ class Client extends http.BaseClient {
       SuperTokens.config.eventHandler(Eventype.REFRESH_SESSION);
       return UnauthorisedResponse(status: UnauthorisedStatus.RETRY);
     } catch (e) {
+      if (e is SocketException) {
+        throw e;
+      }
       return UnauthorisedResponse(
-          status: UnauthorisedStatus.API_ERROR,
-          error: SuperTokensException("Some unknown error occured"));
+        status: UnauthorisedStatus.API_ERROR,
+        error: SuperTokensException("Some unknown error occured"),
+      );
     } finally {
       LocalSessionState localSessionState =
           await SuperTokensUtils.getLocalSessionState();
